@@ -1,4 +1,3 @@
-// LocalStorage tabanlı kullanıcı ve admin sistemi
 let currentUser = null;
 
 function signup() {
@@ -6,9 +5,12 @@ function signup() {
   let n = document.getElementById('nickname').value
   let p = document.getElementById('password').value
   if(!u || !p) { alert('Kullanıcı adı ve şifre gerekli'); return; }
+  
   let users = JSON.parse(localStorage.getItem('users')||'{}')
   if(users[u]) { alert('Kullanıcı zaten var'); return; }
-  users[u] = {password:p, nickname:n, admin: u==='TFDholderr'}
+  
+  // Admin tanımlaması: TFDholderr ve BaskaAdmin admin
+  users[u] = {password:p, nickname:n, admin: (u==='TFDholderr' || u==='BaskaAdmin')}
   localStorage.setItem('users', JSON.stringify(users))
   alert('Kayıt başarılı')
 }
@@ -26,11 +28,20 @@ function login() {
   } else alert('Kullanıcı adı veya şifre yanlış')
 }
 
+// Çıkış yap fonksiyonu
+function logout() {
+  currentUser = null
+  document.getElementById('main').style.display = 'none'
+  document.getElementById('auth').style.display = 'block'
+  alert('Çıkış yapıldı')
+}
+
 function showTab(tab) {
   document.querySelectorAll('.tab').forEach(t=>t.style.display='none')
   document.getElementById(tab).style.display='block'
 }
 
+// Duyuru ve chat fonksiyonları (öncekiler gibi)
 function loadTabs() {
   let users = JSON.parse(localStorage.getItem('users')||'{}')
   if(users[currentUser].admin) {
@@ -71,7 +82,7 @@ function sendContact() {
   alert('Destek gönderildi adminlere bildirim gitti')
 }
 
-// Basit sohbet sistemi
+// Basit chat
 function openChat(contactIndex) {
   document.getElementById('chatWindow').style.display='block'
   loadChat(contactIndex)
@@ -80,7 +91,7 @@ function openChat(contactIndex) {
 function loadChat(index) {
   let contacts = JSON.parse(localStorage.getItem('contacts')||'[]')
   let chatEl = document.getElementById('chatMessages')
-  chatEl.innerHTML = ''
+  chatEl.innerHTML=''
   contacts[index].messages.forEach(m=>{
     chatEl.innerHTML += m.from + ': ' + m.text + '<br>'
   })
